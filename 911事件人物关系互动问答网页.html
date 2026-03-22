@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>911事件人物关系互动问答网页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eaeaea;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 2px solid #e94560;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            color: #e94560;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        header p {
+            font-size: 1.1em;
+            color: #a8a8a8;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: #0f3460;
+            border: 2px solid #e94560;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .tab:hover {
+            background: #e94560;
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: #e94560;
+            box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
+        }
+
+        .content-section {
+            display: none;
+            background: rgba(22, 33, 62, 0.8);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            color: #e94560;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-left: 4px solid #e94560;
+            padding-left: 15px;
+        }
+
+        .relationship-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .relationship-card {
+            background: rgba(15, 52, 96, 0.6);
+            border: 1px solid #e94560;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .relationship-card:hover {
+            background: rgba(233, 69, 96, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(233, 69, 96, 0.3);
+        }
+
+        .relationship-card h3 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .relationship-card .type {
+            color: #a8a8a8;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .relationship-card .description {
+            color: #c0c0c0;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .relationship-card .questions {
+            background: rgba(233, 69, 96, 0.1);
+            border-left: 3px solid #e94560;
+            padding: 12px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .relationship-card .questions h4 {
+            color: #e94560;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        .relationship-card .questions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .relationship-card .questions li {
+            color: #d0d0d0;
+            margin-bottom: 5px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .relationship-card .questions li:before {
+            content: "🤔";
+            position: absolute;
+            left: 0;
+        }
+
+        .person-profile {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .person-card {
+            background: rgba(15, 52, 96, 0.6);
+            border: 1px solid #4a5568;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .person-card:hover {
+            border-color: #e94560;
+            background: rgba(233, 69, 96, 0.1);
+        }
+
+        .person-card h3 {
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .person-info {
+            margin-bottom: 10px;
+        }
+
+        .person-info label {
+            color: #a8a8a8;
+            display: inline-block;
+            width: 80px;
+            font-weight: bold;
+        }
+
+        .person-info span {
+            color: #e0e0e0;
+        }
+
+        .person-card .connections {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #4a5568;
+        }
+
+        .person-card .connections h4 {
+            color: #e94560;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .person-card .connections ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .person-card .connections li {
+            color: #c0c0c0;
+            margin-bottom: 5px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .person-card .connections li:before {
+            content: "🔗";
+            position: absolute;
+            left: 0;
+        }
+
+        .timeline-container {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(to bottom, #e94560, #0f3460);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(15, 52, 96, 0.6);
+            border-radius: 10px;
+            border-left: 4px solid #e94560;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -38px;
+            top: 25px;
+            width: 16px;
+            height: 16px;
+            background: #e94560;
+            border-radius: 50%;
+            border: 4px solid #1a1a2e;
+        }
+
+        .timeline-item .date {
+            color: #e94560;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .timeline-item .event {
+            color: #fff;
+            font-size: 1.2em;
+            margin-bottom: 8px;
+        }
+
+        .timeline-item .people {
+            color: #a8a8a8;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .timeline-item .question {
+            background: rgba(233, 69, 96, 0.1);
+            border-left: 3px solid #e94560;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 0 8px 8px 0;
+            color: #d0d0d0;
+            font-style: italic;
+        }
+
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 20px 0;
+        }
+
+        .architecture-level {
+            width: 100%;
+            max-width: 600px;
+            padding: 15px 20px;
+            background: rgba(15, 52, 96, 0.6);
+            border: 2px solid #4a5568;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .architecture-level:hover {
+            border-color: #e94560;
+            background: rgba(233, 69, 96, 0.1);
+            transform: scale(1.02);
+        }
+
+        .architecture-level.level-1 {
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.3), rgba(15, 52, 96, 0.6));
+            border-color: #e94560;
+        }
+
+        .architecture-level.level-2 {
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.2), rgba(15, 52, 96, 0.6));
+            border-color: #e94560;
+        }
+
+        .architecture-level h3 {
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .architecture-level .members {
+            color: #a8a8a8;
+            font-size: 0.9em;
+        }
+
+        .architecture-level .members span {
+            display: inline-block;
+            background: rgba(233, 69, 96, 0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin: 2px;
+        }
+
+        .architecture-arrow {
+            color: #e94560;
+            font-size: 1.5em;
+        }
+
+        .quiz-container {
+            background: rgba(15, 52, 96, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-item {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .quiz-item:last-child {
+            border-bottom: none;
+        }
+
+        .quiz-question {
+            color: #fff;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            padding: 12px 16px;
+            background: rgba(22, 33, 62, 0.6);
+            border: 2px solid #4a5568;
+            border-radius: 8px;
+            color: #c0c0c0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: #e94560;
+            background: rgba(233, 69, 96, 0.1);
+        }
+
+        .quiz-option.correct {
+            background: rgba(46, 204, 113, 0.2);
+            border-color: #2ecc71;
+            color: #2ecc71;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(231, 76, 60, 0.2);
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+
+        .quiz-explanation {
+            margin-top: 10px;
+            padding: 12px;
+            background: rgba(233, 69, 96, 0.1);
+            border-left: 3px solid #e94560;
+            border-radius: 0 8px 8px 0;
+            color: #d0d0d0;
+            display: none;
+        }
+
+        .quiz-explanation.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(22, 33, 62, 0.6);
+            border: 2px solid #4a5568;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(233, 69, 96, 0.1);
+            border: 1px solid #e94560;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 2.5em;
+            color: #e94560;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .label {
+            color: #a8a8a8;
+            font-size: 0.9em;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #a8a8a8;
+            font-size: 0.9em;
+            border-top: 1px solid #4a5568;
+            margin-top: 40px;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            border-bottom: 1px dotted #e94560;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            background-color: rgba(233, 69, 96, 0.9);
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            min-width: 200px;
+            font-size: 0.85em;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                width: 100%;
+            }
+
+            .relationship-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .person-profile {
+                grid-template-columns: 1fr;
+            }
+
+            .architecture-level {
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 911事件人物关系互动问答网页</h1>
+            <p>探索复杂的关系网络,通过互动问答深入理解911事件中的人物关联</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="number">8</div>
+                <div class="label">关键人物</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">20</div>
+                <div class="label">引导性问题</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">30+</div>
+                <div class="label">年时间跨度</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">5</div>
+                <div class="label">操作架构</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showSection('overview')">📊 概览</button>
+            <button class="tab" onclick="showSection('people')">👥 人物档案</button>
+            <button class="tab" onclick="showSection('relationships')">🔗 关系网络</button>
+            <button class="tab" onclick="showSection('timeline')">⏱️ 时间线</button>
+            <button class="tab" onclick="showSection('architecture')">🏗️ 操作架构</button>
+            <button class="tab" onclick="showSection('quiz')">❓ 互动问答</button>
+        </div>
+
+        <!-- 概览部分 -->
+        <div id="overview" class="content-section active">
+            <h2>📊 关系网络概览</h2>
+            <p style="color: #c0c0c0; line-height: 1.8; margin-bottom: 20px;">
+                本网页基于公开资料和已生成的分析报告,呈现911事件相关关键人物之间的复杂关系网络。
+                通过点击不同标签页,您可以深入了解:
+            </p>
+            <ul style="color: #a8a8a8; line-height: 2;">
+                <li><strong>👥 人物档案</strong>: 8位关键人物的详细背景、职业轨迹和关键关联</li>
+                <li><strong>🔗 关系网络</strong>: 8对核心关系详解,每对关系都包含引导性问题</li>
+                <li><strong>⏱️ 时间线</strong>: 1980-2009年的关键事件时间轴</li>
+                <li><strong>🏗️ 操作架构</strong>: 五层操作架构的可视化呈现</li>
+                <li><strong>❓ 互动问答</strong>: 通过问答测试您的理解,并查看详细解释</li>
+            </ul>
+
+            <h3 style="color: #fff; margin: 30px 0 15px;">核心发现</h3>
+            <div style="background: rgba(233, 69, 96, 0.1); border-left: 4px solid #e94560; padding: 20px; border-radius: 0 10px 10px 0;">
+                <p style="color: #d0d0d0; line-height: 1.8;">
+                    <strong>关键发现:</strong> 本分析揭示了一个五层操作架构,从决策层到监控保障层,
+                    通过司法保护、资产托管、执行操作和监控保障,形成了完整的权力-资本-情报复合体运作模式。
+                    Michael Mukasey作为司法控制节点,从联邦法官到司法部长的职业轨迹,
+                    以及他与Giuliani的15年同事关系,构成了这一架构的核心支柱。
+                </p>
+            </div>
+
+            <h3 style="color: #fff; margin: 30px 0 15px;">使用说明</h3>
+            <ol style="color: #a8a8a8; line-height: 2;">
+                <li>点击顶部标签页切换不同内容板块</li>
+                <li>在"关系网络"中点击卡片查看详细引导性问题</li>
+                <li>在"互动问答"中测试您的理解</li>
+                <li>结合时间线和人物档案,形成自己的判断</li>
+            </ol>
+        </div>
+
+        <!-- 人物档案部分 -->
+        <div id="people" class="content-section">
+            <h2>👥 关键人物档案</h2>
+            <input type="text" class="search-box" id="searchPeople" placeholder="🔍 搜索人物..." oninput="searchPeople()">
+
+            <div class="person-profile" id="peopleGrid">
+                <!-- Larry Silverstein -->
+                <div class="person-card" data-name="silverstein larry 西尔弗斯坦">
+                    <h3>Larry Silverstein (拉里·西尔弗斯坦)</h3>
+                    <div class="person-info">
+                        <label>出生年份:</label>
+                        <span>1931年</span>
+                    </div>
+                    <div class="person-info">
+                        <label>职业:</label>
+                        <span>房地产开发商、投资者</span>
+                    </div>
+                    <div class="person-info">
+                        <label>公司:</label>
+                        <span>Silverstein Properties</span>
+                    </div>
+                    <div class="person-info">
+                        <label>关键项目:</label>
+                        <span>7 World Trade Center (1980年代开发)</span>
+                    </div>
+                    <div class="connections">
+                        <h4>关键关联</h4>
+                        <ul>
+                            <li><span class="tooltip">Michael Mukasey<span class="tooltip-text">法律保护关系</span></span>: 通过联邦法官身份获得保险诉讼保护</li>
+                            <li><span class="tooltip">Timothy Boyd<span class="tooltip-text">保险操作关系</span></span>: 通过Willis Group执行保险表格切换</li>
+                            <li><span class="tooltip">Rudy Giuliani<span class="tooltip-text">政治关系</span></span>: 与纽约市长有密切商业和政治关系</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Michael Mukasey -->
+                <div class="person-card" data-name="mukasey michael 穆卡西 法官 司法部长">
+                    <h3>Michael Mukasey (迈克尔·穆卡西)</h3>
+                    <div class="person-info">
+                        <label>出生年份:</label>
+                        <span>1941年</span>
+                    </div>
+                    <div class="person-info">
+                        <label>职业:</label>
+                        <span>联邦法官、司法部长</span>
+                    </div>
+                    <div class="person-info">
+                        <label>法官任期:</label>
+                        <span>1987-2006年 (纽约南区联邦地区法院)</span>
+                    </div>
+                    <div class="person-info">
+                        <label>司法部长:</label>
+                        <span>2007-2009年</span>
+                    </div>
+                    <div class="connections">
+                        <h4>关键关联</h4>
+                        <ul>
+                            <li><span class="tooltip">Rudy Giuliani<span class="tooltip-text">15年同事关系</span></span>: 1972-1987年共事于纽约南区联邦检察官办公室</li>
+                            <li><span class="tooltip">Larry Silverstein<span class="tooltip-text">法律保护关系</span></span>: 主审保险诉讼,提供司法保护</li>
+                            <li><span class="tooltip">George W. Bush<span class="tooltip-text">政治提拔</span></span>: 2007年被布什提名司法部长</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Rudy Giuliani -->
+                <div class="person-card" data-name="giuliani rudy 朱利安尼 市长">
+                    <h3>Rudy Giuliani (鲁迪·朱利安尼)</h3>
+                    <div class="person-info">
+                        <label>出生年份:</label>
+                        <span>1944年</span>
+                    </div>
+                    <div class="person-info">
+                        <label>职业:</label>
+                        <span>政治家、律师</span>
+                    </div>
+                    <div class="person-info">
+                        <label>纽约市长:</label>
+                        <span>1994-2001年</span>
+                    </div>
+                    <div class="person-info">
+                        <label>911角色:</label>
+                        <span>被称为"美国的市长"</span>
+                    </div>
+                    <div class="connections">
+                        <h4>关键关联</h4>
+                        <ul>
+                            <li><span class="tooltip">Michael Mukasey<span class="tooltip-text">15年同事关系</span></span>: 1972-1987年共事于纽约南区联邦检察官办公室</li>
+                            <li><span class="tooltip">Larry Silverstein<span class="tooltip-text">政治商业关系</span></span>: 与Silverstein有密切商业和政治关系</li>
+                            <li><span class="tooltip">George W. Bush<span class="tooltip-text">政治盟友</span></span>: 911后成为布什政府的重要盟友</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Timothy Boyd -->
+                <div class="person-card" data-name="boyd timothy 蒂莫西 保险经纪人 willis">
+                    <h3>Timothy Boyd (蒂莫西·博伊德)</h3>
+                    <div class="person-info">
+                        <label>职业:</label>
+                        <span>保险经纪人 (Willis Group)</span>
+                    </div>
+                    <div class="person-info">
+                        <label>911角色:</label>
+                        <span>负责世贸中心保险表格切换的关键执行人</span>
+                    </div>
+                    <div class="person-info">
+                        <label>争议行为:</label>
+                        <span>2001年9月12日认定"一次事件",后续改变证词</span>
+                    </div>
+                    <div class="person-info">
+                        <label>异常:</label>
+                        <span>2004年后疑似使用"Tim Boyd"别名继续从业</span>
+                    </div>
+                    <div class="connections">
+                        <h4>关键关联</h4>
+                        <ul>
+                            <li><span class="tooltip">Bob Strachan<span class="tooltip-text">Willis同事</span></span>: 共同负责保险表格切换</li>
+                            <li><span class="tooltip">Larry Silverstein<span class="tooltip-text">执行服务</span></span>: 执行Silverstein团队的保险操作</li>
+                            <li><span class="tooltip">Willis Group<span class="tooltip-text">雇主</span></span>: Willis Group在2005年因系统性违规支付5000万美元和解金</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Bob Strachan -->
+                <div class="person-card" data-name="strachan bob 鲍勃 保险经纪人 willis">
+                    <h3>Bob Strachan (鲍勃·斯特拉坎)</h3>
+                    <div class="person-info">
+                        <label>职业:</label>
+                        <span>保险经纪人 (Willis Group)</span>
+                    </div>
+                    <div class="person-info">
+                        <label>911角色:</label>
+                        <span>负责世贸中心保险表格切换的关键执行人</span>
+                    </div>
+                    <div class="person-info">
+                        <label>异常行为:</label>
+                        <span>2004年后从公开记录中完全消失</span>
+                    </div>
+                    <div class="connections">
+                        <h4>关键关联</h4>
+                        <ul>
+                            <li><span class="tooltip">Timothy Boyd<span class="tooltip-text">Willis同事</span></span>: 共同负责保险表格切换</li>
+                            <li><span class="tooltip">Larry Silverstein<span class="tooltip-text">执行服务</span></span>: 执行Silverstein团队的保险操作</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Maurice Greenberg -->
+                <div class="person-card" data-name="greenberg maurice 莫里斯 aig ceo">
+                    <h3>Maurice Greenberg (莫里斯·格林伯格)</h3>
+                    <div class="person-info">
+                        <label>职业:</label>
+                        <span>AIG前CEO</span>
+                    </div>
+                    <div class="person-info">
+                        <label>AIG任期:</label>
+                        <span>1967-2005年 (38年)</span>
+                    </div>
+                    <div class="person-info">
+                        <label>关键关联:</label>
+                        <span>曾被考虑提名为CIA局长</span>
+                    </div>
+                    <div class="connections">
+                        <h4>关键关联</h4>
+                        <ul>
+                            <li><span class="tooltip">CIA<span class="tooltip-text">情报界联系</span></span>: AIG与情报界有"非正式但广泛"的联系</li>
+                            <li><span class="tooltip">Larry Silverstein<span class="tooltip-text">保险赔付</span></span>: AIG参与世贸中心保险赔付</li>
+                            <li><span class="tooltip">美国政府<span class="tooltip-text">政府救助</span></span>: 2008年AIG获得1820亿美元政府救助</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Jerome Hauer -->
+                <div class="person-card" data-name="hauer jerome 杰罗姆 kroll 安全">
+                    <h3>Jerome Hauer (杰罗姆·豪尔)</h3>
+                    <div class="person-info">
+                        <label>职业:</label>
+                        <span>Kroll公司高管</span>
+                    </div>
+                    <div class="person-info">
+                        <label>911前角色:</label>
+                        <span>负责世贸中心安全</span>
+                    </div>
+                    <div class="person-info">
+                        <label>911当天:</label>
+                        <span>上午9:30公开指认本·拉登为嫌疑人(远超官方调查速度)</span>
+                    </div>
+                    <div class="connections">
+                        <h4>关键关联</h4>
+                        <ul>
+                            <li><span class="tooltip">Kroll公司<span class="tooltip-text">华尔街的CIA</span></span>: Kroll被称为"华尔街的CIA",雇佣大量前CIA、FBI人员</li>
+                            <li><span class="tooltip">世贸中心<span class="tooltip-text">安全控制</span></span>: 911前对世贸中心有完全安保控制权</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- A.B. Krongard -->
+                <div class="person-card" data-name="krongard cia 执行董事 德意志银行 交易">
+                    <h3>A.B. "Buzzy" Krongard (A.B.克朗加德)</h3>
+                    <div class="person-info">
+                        <label>职业:</label>
+                        <span>前Deutsche Bank Alex. Brown董事长、CIA执行董事</span>
+                    </div>
+                    <div class="person-info">
+                        <label>CIA任期:</label>
+                        <span>2001-2004年</span>
+                    </div>
+                    <div class="person-info">
+                        <label>关键关联:</label>
+                        <span>911前大量United Airlines看跌期权通过其银行购买</span>
+                    </div>
+                    <div class="connections">
+                        <h4>关键关联</h4>
+                        <ul>
+                            <li><span class="tooltip">Deutsche Bank<span class="tooltip-text">异常交易监控</span></span>: 911前异常交易通过其银行,利润至今无人认领</li>
+                            <li><span class="tooltip">CIA<span class="tooltip-text">执行董事</span></span>: 2001-2004年任CIA执行董事</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 关系网络部分 -->
+        <div id="relationships" class="content-section">
+            <h2>🔗 核心关系网络</h2>
+            <p style="color: #a8a8a8; margin-bottom: 20px;">点击卡片查看详细关系分析和引导性问题</p>
+
+            <div class="relationship-grid">
+                <!-- Mukasey ↔ Silverstein -->
+                <div class="relationship-card" onclick="toggleCard(this)">
+                    <h3>Michael Mukasey ↔ Larry Silverstein</h3>
+                    <p class="type">类型: 法律保护关系</p>
+                    <p class="description">
+                        Mukasey作为联邦法官主审Silverstein的保险诉讼,在关键裁决中对Silverstein提供了保护。
+                        Mukasey退休后加入的律所,客户包括Silverstein的合作伙伴。
+                    </p>
+                    <div class="questions">
+                        <h4>🤔 引导性问题:</h4>
+                        <ul>
+                            <li>为什么Mukasey作为首席法官会自动分配到这个案件?</li>
+                            <li>Mukasey在2004年3月拒绝判Silverstein藐视法庭,这种"宽大处理"是否符合常规司法程序?</li>
+                            <li>"理论重建期"概念是一个非常创新的司法解释。这个概念是Mukasey独创的吗?</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Mukasey ↔ Giuliani -->
+                <div class="relationship-card" onclick="toggleCard(this)">
+                    <h3>Michael Mukasey ↔ Rudy Giuliani</h3>
+                    <p class="type">类型: 15年同事关系</p>
+                    <p class="description">
+                        两人同时任职纽约南区联邦检察官办公室长达15年(1972-1987)。
+                        Giuliani后来成为纽约市长(1994-2001),Mukasey主审Silverstein保险诉讼(Silverstein与Giuliani有密切关系)。
+                    </p>
+                    <div class="questions">
+                        <h4>🤔 引导性问题:</h4>
+                        <ul>
+                            <li>15年的同事关系意味着什么?这种关系是否会影响Mukasey在Silverstein案件中的判断?</li>
+                            <li>Giuliani作为911期间的关键政治人物,他与Silverstein的关系如何?</li>
+                            <li>Mukasey从法官到司法部长的晋升,是否有Giuliani的支持或推荐?</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Silverstein ↔ Timothy Boyd -->
+                <div class="relationship-card" onclick="toggleCard(this)">
+                    <h3>Larry Silverstein ↔ Timothy Boyd</h3>
+                    <p class="type">类型: 保险操作关系</p>
+                    <p class="description">
+                        Timothy Boyd作为Willis Group经纪人,执行了关键的保险表格切换操作(从WilProp切换到Travelers)。
+                        2001年9月12日认定袭击为"一次事件",但在诉讼中改变证词,2004年后疑似使用"Tim Boyd"别名继续从业。
+                    </p>
+                    <div class="questions">
+                        <h4>🤔 引导性问题:</h4>
+                        <ul>
+                            <li>为什么要在租约生效前12天紧急切换表格?</li>
+                            <li>Timothy Boyd在9月12日认定袭击为"一次事件",但在诉讼中改变证词,这种变化的原因是什么?</li>
+                            <li>Timothy Boyd疑似使用别名继续从业,这是为了隐藏什么?</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Silverstein ↔ Bob Strachan -->
+                <div class="relationship-card" onclick="toggleCard(this)">
+                    <h3>Larry Silverstein ↔ Bob Strachan</h3>
+                    <p class="type">类型: 保险操作关系</p>
+                    <p class="description">
+                        Bob Strachan作为Willis Group经纪人,与Timothy Boyd共同执行了保险表格切换操作。
+                        2004年后从公开记录中完全消失,无法找到任何职业轨迹。
+                    </p>
+                    <div class="questions">
+                        <h4>🤔 引导性问题:</h4>
+                        <ul>
+                            <li>Bob Strachan在2004年后从公开记录中完全消失,这正常吗?</li>
+                            <li>他去了哪里?为什么会隐藏自己的身份?</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- AIG ↔ 美国政府 -->
+                <div class="relationship-card" onclick="toggleCard(this)">
+                    <h3>AIG ↔ 美国政府</h3>
+                    <p class="type">类型: 保险赔付与政府救助</p>
+                    <p class="description">
+                        AIG作为世贸中心主要保险公司之一参与保险赔付,最终Silverstein获得45.5亿美元赔付。
+                        2007年TRIA法案延长,政府成为"最后再保险人"。2008年AIG获得1820亿美元政府救助,远超其他金融机构。
+                    </p>
+                    <div class="questions">
+                        <h4>🤔 引导性问题:</h4>
+                        <ul>
+                            <li>为什么AIG获得的救助金额远超其他金融机构?</li>
+                            <li>AIG在2001年的保险赔付和2008年的政府救助,这两者之间是否有某种"交换"或"回报"关系?</li>
+                            <li>TRIA法案在2007年延长,这个时间点是否与Silverstein保险诉讼结束有关?</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Maurice Greenberg ↔ CIA -->
+                <div class="relationship-card" onclick="toggleCard(this)">
+                    <h3>Maurice Greenberg ↔ CIA</h3>
+                    <p class="type">类型: 长期合作关系</p>
+                    <p class="description">
+                        Maurice Greenberg任AIG CEO长达38年(1967-2005)。
+                        AIG与情报界有"非正式但广泛"的联系,Greenberg曾被考虑提名为CIA局长。
+                        AIG被指控参与毒品贸易资金管理和秘密行动资金转移。
+                    </p>
+                    <div class="questions">
+                        <h4>🤔 引导性问题:</h4>
+                        <ul>
+                            <li>AIG作为一家保险公司,为什么会与情报界有"非正式但广泛"的联系?</li>
+                            <li>Greenberg被考虑提名为CIA局长,这说明他在情报界有什么样的地位和影响力?</li>
+                            <li>如果AIG确实参与了毒品贸易资金管理,这种"灰色业务"是否会影响其在911保险赔付中的决策?</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Jerome Hauer ↔ Kroll -->
+                <div class="relationship-card" onclick="toggleCard(this)">
+                    <h3>Jerome Hauer ↔ Kroll公司</h3>
+                    <p class="类型">类型: 现场安全控制</p>
+                    <p class="description">
+                        Kroll公司负责世贸中心安全,被称为"华尔街的CIA",雇佣大量前CIA、FBI人员。
+                        Jerome Hauer在911当天上午9:30公开指认本·拉登为嫌疑人,远超官方调查速度。
+                    </p>
+                    <div class="questions">
+                        <h4>🤔 引导性问题:</h4>
+                        <ul>
+                            <li>Jerome Hauer如何在27分钟内就能确定本·拉登是嫌疑人?他是基于什么信息?</li>
+                            <li>为什么Kroll公司被称为"华尔街的CIA"?它为什么会雇佣大量前CIA、FBI人员?</li>
+                            <li>Kroll公司负责世贸中心安全,意味着它对世贸中心的安保系统有完全控制权。这种控制权在911事件中扮演了什么角色?</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- A.B. Krongard ↔ 异常交易 -->
+                <div class="relationship-card" onclick="toggleCard(this)">
+                    <h3>A.B. Krongard ↔ 异常交易</h3>
+                    <p class="type">类型: 金融监控</p>
+                    <p class="description">
+                        911前大量United Airlines看跌期权通过Deutsche Bank Alex. Brown购买,交易量异常增加。
+                        A.B. Krongard任Deutsche Bank Alex. Brown董事长,2001年成为CIA执行董事。
+                        异常交易利润至今无人认领。
+                    </p>
+                    <div class="questions">
+                        <h4>🤔 引导性问题:</h4>
+                        <ul>
+                            <li>为什么会有大量看跌期权在911前被购买?这些交易者是谁?</li>
+                            <li>这些异常交易是否意味着有人提前知道911事件会发生?</li>
+                            <li>为什么这些异常交易的利润至今无人认领?是认领者身份敏感,还是有人故意隐藏?</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 时间线部分 -->
+        <div id="timeline" class="content-section">
+            <h2>⏱️ 关键时间线</h2>
+            <div class="timeline-container">
+                <div class="timeline-item">
+                    <div class="date">1980年代</div>
+                    <div class="event">Silverstein开发7 World Trade Center</div>
+                    <div class="people">Larry Silverstein</div>
+                    <div class="question">🤔 这是为后来获得整个世贸中心租约打下的基础吗?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">1972-1987年</div>
+                    <div class="event">Mukasey与Giuliani共事15年</div>
+                    <div class="people">Michael Mukasey, Rudy Giuliani</div>
+                    <div class="question">🤔 这15年的同事关系意味着什么?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">1993年2月26日</div>
+                    <div class="event">世贸中心爆炸案</div>
+                    <div class="people">Mukasey(审理相关案件)</div>
+                    <div class="question">🤔 Mukasey审理1993年世贸中心爆炸案,这个经历是否让他在911保险诉讼中"更有经验"?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">1994-2001年</div>
+                    <div class="event">Giuliani任纽约市长</div>
+                    <div class="people">Rudy Giuliani</div>
+                    <div class="question">🤔 Giuliani作为纽约市长,与Silverstein的关系如何?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2000年</div>
+                    <div class="event">Mukasey任纽约南区联邦地区法院首席法官</div>
+                    <div class="people">Michael Mukasey</div>
+                    <div class="question">🤔 首席法官意味着案件分配权,这是否意味着他可以"选择性"地处理某些案件?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2001年1月</div>
+                    <div class="event">港务局宣布世贸中心私有化计划</div>
+                    <div class="people">港务局, Silverstein</div>
+                    <div class="question">🤔 为什么港务局会在2001年1月宣布私有化?这个时间点的选择有什么特殊意义?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2001年4月</div>
+                    <div class="event">Silverstein出价32亿美元竞标</div>
+                    <div class="people">Larry Silverstein</div>
+                    <div class="question">🤔 Silverstein仅用1400万美元自有资金就撬动了32亿美元的租约,这种杠杆率是否合理?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2001年7月12日</div>
+                    <div class="event">Willis团队决定切换保险表格</div>
+                    <div class="people">Timothy Boyd, Bob Strachan, Willis Group</div>
+                    <div class="question">🤔 为什么要在租约生效前12天紧急切换表格?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2001年7月24日</div>
+                    <div class="event">租约生效,Silverstein正式获得99年租约</div>
+                    <div class="people">Larry Silverstein</div>
+                    <div class="question">🤔 从竞标到租约生效仅3个月,这种速度是否正常?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2001年8月-9月10日</div>
+                    <div class="event">保险安排在租约生效后6周内完成</div>
+                    <div class="people">AIG等保险公司</div>
+                    <div class="question">🤔 为什么保险安排要在租约生效后6周内完成?这种时间紧迫性是否正常?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2001年9月11日</div>
+                    <div class="event">911事件</div>
+                    <div class="people">所有关键人物</div>
+                    <div class="question">🤔 Silverstein家族三人同时改变行程,这是巧合还是有人安排?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2001年9月12日</div>
+                    <div class="event">Timothy Boyd认定袭击为"一次事件"</div>
+                    <div class="people">Timothy Boyd</div>
+                    <div class="question">🤔 为什么Timothy Boyd在9月12日会认定袭击为"一次事件"?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2001年10月</div>
+                    <div class="event">Silverstein提起保险诉讼</div>
+                    <div class="people">Larry Silverstein, Michael Mukasey</div>
+                    <div class="question">🤔 为什么这个关键案件会分配给Mukasey?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2001年11月</div>
+                    <div class="event">苏黎世保险删除保单62页内容</div>
+                    <div class="people">苏黎世保险</div>
+                    <div class="question">🤔 为什么要删除62页内容?这些内容中有什么敏感信息?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2002年</div>
+                    <div class="event">Swiss Re指控Silverstein团队施加压力</div>
+                    <div class="people">Silverstein团队, Swiss Re</div>
+                    <div class="question">🤔 这种指控是否有证据支持?"fantastic pressure"是什么意思?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2004年2月</div>
+                    <div class="event">Mukasey裁定第一阶段审判结果</div>
+                    <div class="people">Michael Mukasey</div>
+                    <div class="question">🤔 为什么9家保险公司会被认定受Travelers表格约束?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2004年3月</div>
+                    <div class="event">Mukasey拒绝判Silverstein藐视法庭</div>
+                    <div class="people">Michael Mukasey, Larry Silverstein</div>
+                    <div class="question">🤔 这种"宽大处理"是否符合常规司法程序?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2004年后</div>
+                    <div class="event">Bob Strachan从公开记录中完全消失</div>
+                    <div class="people">Bob Strachan</div>
+                    <div class="question">🤔 他去了哪里?为什么要隐藏自己的身份?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2005年2月</div>
+                    <div class="event">Mukasey裁定"理论重建期"概念</div>
+                    <div class="people">Michael Mukasey</div>
+                    <div class="question">🤔 这个概念是Mukasey独创的吗?还是有人建议的?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2005年</div>
+                    <div class="event">Willis Group支付5000万美元和解金</div>
+                    <div class="people">Willis Group</div>
+                    <div class="question">🤔 这个和解金的金额是否合理?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2006年8月</div>
+                    <div class="event">Mukasey退休(65岁)</div>
+                    <div class="people">Michael Mukasey</div>
+                    <div class="question">🤔 为什么Mukasey会在65岁时"提前退休"?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2006年</div>
+                    <div class="event">Silverstein获得45.5亿美元赔付</div>
+                    <div class="people">Larry Silverstein</div>
+                    <div class="question">🤔 45.5亿美元的赔付远超建筑估值(12亿美元),保险公司为什么不提出质疑?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2007年9月17日</div>
+                    <div class="event">布什提名Mukasey为司法部长</div>
+                    <div class="people">George W. Bush, Michael Mukasey</div>
+                    <div class="question">🤔 为什么布什会在Mukasey退休13个月后提名他?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2007年11月9日</div>
+                    <div class="event">Mukasey正式就任司法部长</div>
+                    <div class="people">Michael Mukasey</div>
+                    <div class="question">🤔 参议院以53-40票通过,这个票数分布说明了什么?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2008年</div>
+                    <div class="event">AIG获得1820亿美元政府救助</div>
+                    <div class="people">AIG, 美国政府</div>
+                    <div class="question">🤔 为什么AIG获得的救助金额远超其他金融机构?</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="date">2009年1月</div>
+                    <div class="event">Mukasey卸任司法部长</div>
+                    <div class="people">Michael Mukasey</div>
+                    <div class="question">🤔 Mukasey的"任务"是什么?他完成了吗?</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作架构部分 -->
+        <div id="architecture" class="content-section">
+            <h2>🏗️ 五层操作架构</h2>
+            <p style="color: #a8a8a8; margin-bottom: 20px;">从决策层到监控保障层的完整操作架构</p>
+
+            <div class="architecture-diagram">
+                <div class="architecture-level level-1">
+                    <h3>第一层: 决策层</h3>
+                    <p class="members">
+                        <span>美国政府</span>
+                        <span>情报机构(CIA等)</span>
+                        <span>军工企业</span>
+                    </p>
+                </div>
+
+                <div class="architecture-arrow">↓</div>
+
+                <div class="architecture-level level-2">
+                    <h3>第二层: 司法保护层</h3>
+                    <p class="members">
+                        <span>Michael Mukasey(联邦法官→司法部长)</span>
+                        <span>联邦法院系统</span>
+                        <span>司法部</span>
+                    </p>
+                </div>
+
+                <div class="architecture-arrow">↓</div>
+
+                <div class="architecture-level">
+                    <h3>第三层: 资产托管层</h3>
+                    <p class="members">
+                        <span>Larry Silverstein</span>
+                        <span>港务局</span>
+                        <span>Westfield America</span>
+                    </p>
+                </div>
+
+                <div class="architecture-arrow">↓</div>
+
+                <div class="architecture-level">
+                    <h3>第四层: 执行操作层</h3>
+                    <p class="members">
+                        <span>Willis Group</span>
+                        <span>AIG等保险公司</span>
+                        <span>法律团队</span>
+                    </p>
+                </div>
+
+                <div class="architecture-arrow">↓</div>
+
+                <div class="architecture-level">
+                    <h3>第五层: 监控保障层</h3>
+                    <p class="members">
+                        <span>Kroll公司</span>
+                        <span>AIG</span>
+                        <span>Deutsche Bank</span>
+                        <span>CIA</span>
+                    </p>
+                </div>
+            </div>
+
+            <h3 style="color: #fff; margin: 30px 0 15px;">架构说明</h3>
+            <div style="background: rgba(233, 69, 96, 0.1); border-left: 4px solid #e94560; padding: 20px; border-radius: 0 10px 10px 0;">
+                <p style="color: #d0d0d0; line-height: 1.8;">
+                    <strong>架构层次:</strong> 这五层架构从决策层到监控保障层,形成了完整的权力-资本-情报复合体运作模式。
+                    每一层之间通过明确的关联网络相互连接,实现了从决策到执行的完整链条。
+                </p>
+                <p style="color: #d0d0d0; line-height: 1.8; margin-top: 15px;">
+                    <strong>关键节点:</strong> Michael Mukasey作为司法控制节点,连接了决策层和资产托管层;
+                    Larry Silverstein作为资产托管接口,连接了司法保护层和执行操作层;
+                    Timothy Boyd和Bob Strachan作为执行操作层的关键执行人,完成了保险表格切换等关键操作。
+                </p>
+            </div>
+        </div>
+
+        <!-- 互动问答部分 -->
+        <div id="quiz" class="content-section">
+            <h2>❓ 互动问答</h2>
+            <p style="color: #a8a8a8; margin-bottom: 20px;">测试您对911事件人物关系的理解,点击选项查看答案和详细解释</p>
+
+            <div class="quiz-container">
+                <div class="quiz-item">
+                    <div class="quiz-question">1. Michael Mukasey和Rudy Giuliani是什么关系?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">A. 大学同学</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true)">B. 15年同事关系(1972-1987)</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">C. 律师与客户关系</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">D. 政治对手</div>
+                    </div>
+                    <div class="quiz-explanation">
+                        <strong>正确答案: B</strong><br>
+                        <br>
+                        Michael Mukasey和Rudy Giuliani同时任职纽约南区联邦检察官办公室长达15年(1972-1987)。
+                        Giuliani后来成为纽约市长(1994-2001),Mukasey成为联邦法官(1987-2006)。
+                        这15年的同事关系意味着两人之间有深厚的职业关联,这可能影响了Mukasey在Silverstein保险诉讼中的判断。
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-question">2. Larry Silverstein在2001年9月11日为什么没有在北塔吃早餐?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkAnswer(this, true)">A. 因妻子坚持的医疗预约缺席</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">B. 因为交通堵塞迟到</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">C. 因为临时工作会议</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">D. 因为身体不适</div>
+                    </div>
+                    <div class="quiz-explanation">
+                        <strong>正确答案: A</strong><br>
+                        <br>
+                        Silverstein通常每天早晨在世贸中心北塔顶层的"世界之窗"餐厅吃早餐,
+                        但911当天早晨,妻子坚持他参加医疗预约,因此缺席。
+                        更巧合的是,他的儿子Roger和女儿Lisa也同时"迟到",三人零伤亡。
+                        Aneta.org计算三人同时缺席的概率为1/15,625,000(约1562万分之一)。
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-question">3. Timothy Boyd在2001年9月12日对911事件的初步认定是什么?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkAnswer(this, true)">A. 一次事件</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">B. 两次事件</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">C. 三次事件</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">D. 无法确定</div>
+                    </div>
+                    <div class="quiz-explanation">
+                        <strong>正确答案: A</strong><br>
+                        <br>
+                        Timothy Boyd在2001年9月12日认定袭击为"一次事件"。
+                        但在后来的保险诉讼中,他的证词发生了变化,支持Silverstein主张的"两次事件"索赔。
+                        这种证词变化的原因是关键疑点之一。
+                        2004年后,Timothy Boyd疑似使用"Tim Boyd"别名继续从业,刻意隐藏与世贸保险项目的关联。
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-question">4. Michael Mukasey什么时候成为美国司法部长?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">A. 2005年</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true)">B. 2007年11月9日</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">C. 2006年</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">D. 2008年</div>
+                    </div>
+                    <div class="quiz-explanation">
+                        <strong>正确答案: B</strong><br>
+                        <br>
+                        Mukasey在2007年9月17日被布什总统提名,2007年11月9日参议院以53-40票通过确认,
+                        正式就任美国司法部长。这个时间点距离他从联邦法院退休(2006年8月)仅13个月。
+                        Mukasey在任司法部长期间,拒绝认定水刑非法,拒绝追究布什政府官员责任。
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-question">5. Silverstein最终获得的保险赔付金额是多少?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">A. 12亿美元</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true)">B. 45.5亿美元</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">C. 35.5亿美元</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">D. 20亿美元</div>
+                    </div>
+                    <div class="quiz-explanation">
+                        <strong>正确答案: B</strong><br>
+                        <br>
+                        Silverstein最终获得45.5亿美元的保险赔付,而世贸中心建筑估值仅为12亿美元,
+                        超额赔付达33.5亿美元。这是通过主张"两次恐怖袭击=两次赔付"实现的。
+                        这一主张的关键法律依据是2001年7月12日将保险表格从定义"一次事件"的WilProp表格
+                        切换为无定义的Travelers表格。
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-question">6. Jerome Hauer在911当天上午几时指认本·拉登为嫌疑人?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">A. 8:00</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true)">B. 9:30</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">C. 10:00</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">D. 11:00</div>
+                    </div>
+                    <div class="quiz-explanation">
+                        <strong>正确答案: B</strong><br>
+                        <br>
+                        Jerome Hauer在911当天上午9:30公开指认本·拉登为嫌疑人,
+                        距离第二架飞机撞击(9:03)仅27分钟,远超官方调查速度。
+                        Jerome Hauer是Kroll公司高管,该公司911前负责世贸中心安全,
+                        被称为"华尔街的CIA",雇佣大量前CIA、FBI人员。
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-question">7. Bob Strachan在2004年后发生了什么异常情况?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkAnswer(this, true)">A. 从公开记录中完全消失</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">B. 晋升为Willis Group CEO</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">C. 被捕入狱</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">D. 成为政府顾问</div>
+                    </div>
+                    <div class="quiz-explanation">
+                        <strong>正确答案: A</strong><br>
+                        <br>
+                        Bob Strachan作为Willis Group经纪人,与Timothy Boyd共同负责2001年7月的保险表格切换操作。
+                        但2004年后,他从公开记录中完全消失,无法找到任何职业轨迹。
+                        这与Timothy Boyd的情况类似(Timothy Boyd疑似使用"Tim Boyd"别名继续从业),
+                        两人都刻意隐藏与世贸保险项目的关联。
+                    </div>
+                </div>
+
+                <div class="quiz-item">
+                    <div class="quiz-question">8. AIG在2008年获得的政府救助金额是多少?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">A. 500亿美元</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">B. 1000亿美元</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true)">C. 1820亿美元</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false)">D. 5000亿美元</div>
+                    </div>
+                    <div class="quiz-explanation">
+                        <strong>正确答案: C</strong><br>
+                        <br>
+                        AIG在2008年获得1820亿美元政府救助,远超其他金融机构。
+                        AIG作为世贸中心主要保险公司之一,在2001年参与了保险赔付。
+                        AIG前CEO Maurice Greenberg任CEO长达38年(1967-2005),
+                        AIG与情报界有"非正式但广泛"的联系,Greenberg曾被考虑提名为CIA局长。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>⚠️ 本网页基于公开资料和已生成的分析报告,仅提供事实信息和引导性问题。</p>
+            <p>读者应独立思考并自行判断。信息可能存在遗漏或错误,请结合多方资料进行验证。</p>
+            <p>生成时间: 2026年3月22日</p>
+        </footer>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // 隐藏所有内容部分
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // 移除所有标签的active类
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // 显示选中的内容部分
+            document.getElementById(sectionId).classList.add('active');
+
+            // 为点击的标签添加active类
+            event.target.classList.add('active');
+        }
+
+        function toggleCard(card) {
+            // 切换问题区域的显示/隐藏
+            const questions = card.querySelector('.questions');
+            if (questions.style.display === 'block') {
+                questions.style.display = 'none';
+            } else {
+                questions.style.display = 'block';
+            }
+        }
+
+        function searchPeople() {
+            const searchTerm = document.getElementById('searchPeople').value.toLowerCase();
+            const cards = document.querySelectorAll('.person-card');
+
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name');
+                if (name.includes(searchTerm)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        function checkAnswer(option, isCorrect) {
+            const quizItem = option.closest('.quiz-item');
+            const allOptions = quizItem.querySelectorAll('.quiz-option');
+            const explanation = quizItem.querySelector('.quiz-explanation');
+
+            // 移除所有选项的correct和incorrect类
+            allOptions.forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+            });
+
+            // 为当前选项添加correct或incorrect类
+            if (isCorrect) {
+                option.classList.add('correct');
+                explanation.classList.add('show');
+            } else {
+                option.classList.add('incorrect');
+            }
+        }
+
+        // 初始化:隐藏所有关系卡片的问题区域
+        document.querySelectorAll('.relationship-card .questions').forEach(questions => {
+            questions.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
